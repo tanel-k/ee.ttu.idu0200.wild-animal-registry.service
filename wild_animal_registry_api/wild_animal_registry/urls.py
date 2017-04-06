@@ -16,5 +16,5 @@ Including another URLconf
 from django.conf.urls import url, include
 
 urlpatterns = [
-    url(r'^', include('web_service.urls'))
+    url(r'^api/', include('web_service.urls'))
 ]
