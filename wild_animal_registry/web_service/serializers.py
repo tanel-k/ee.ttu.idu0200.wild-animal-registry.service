@@ -53,6 +53,8 @@ class SightingViewSerializer(serializers.ModelSerializer):
         fields = ('id', 'dttm', 'latitude', 'longitude', 'animal',)
 
 class SightingSerializer(serializers.ModelSerializer):
+    animal_id = serializers.PrimaryKeyRelatedField(queryset=Species.objects.all(), source='species', read_only=True)
+
     class Meta:
         model = Sighting
-        fields = ('id', 'dttm', 'latitude', 'longitude',)
+        fields = ('id', 'dttm', 'latitude', 'longitude', 'animal_id',)
