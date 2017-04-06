@@ -34,7 +34,7 @@ class Sighting(models.Model):
             raise ValidationError('Invalid longitude')
 
     def __str__(self):
-        return 'lat=' + str(self.latitude) + ' lng=' + str(self.longitude)
+        return 'lat=' + str(self.latitude) + ' lng=' + str(self.longitude) + ' dttm=' + str(self.dttm)
 
 
 class Species(models.Model):

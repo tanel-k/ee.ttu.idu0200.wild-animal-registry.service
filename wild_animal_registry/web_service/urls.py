@@ -9,4 +9,6 @@ urlpatterns = [
     url(r'^animals', views.AnimalList.as_view()),
 
     url(r'^species', views.SpeciesList.as_view()),
+
+    url(r'^sightings', views.SightingsList.as_view()),
 ];

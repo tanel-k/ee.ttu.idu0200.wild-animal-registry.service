@@ -1,3 +1,5 @@
+from itertools import groupby
+
 from django.http import Http404
 from django.db.models import Q
 from rest_framework import generics, views
@@ -5,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from .models import Animal, Sighting, Species
-from .serializers import AnimalSerializer, AnimalSightingSerializer, SpeciesSerializer
+from .serializers import AnimalSerializer, AnimalSightingSerializer, SpeciesSerializer, SightingSerializer
 
 
 class AnimalList(generics.ListCreateAPIView):
@@ -53,13 +55,13 @@ class AnimalSightingsList(AnimalSightingsView):
     View of all the sightings of an animal.
     """
     def get(self, request, animal_id):
-        sightings = Sighting.objects.filter(animal_id=animal_id)
+        sightings = Sighting.objects.filter(animal_id=animal_id).order_by('-dttm')
         serializer = AnimalSightingSerializer(sightings, many=True)
         return Response(serializer.data)
 
     def post(self, request, animal_id):
         animal = self.get_animal(animal_id)
-        request.data['animal'] = animal.pk
+        request.data['animal_id'] = animal.pk
         serializer = AnimalSightingSerializer(data=request.data)
 
         if serializer.is_valid():
@@ -106,16 +108,34 @@ class SpeciesList(generics.ListAPIView):
             queryset = queryset.filter(vernacular_name__search=vernacular_name)
         return queryset
 
-"""
-class AnimalSightingDetailView(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = AnimalSightingSerializer
 
-    def get_queryset(self):
+class SightingsList(views.APIView):
+    def get(self, request):
+        """
+        This view returns the latest sightings of animals.
+        If an animal has been seen in the same location more than once,
+        only the latest sighting is returned in the result set.
+        """
+        sightings = Sighting.objects.all().order_by('latitude', 'longitude')
+        # group by latitude and longitude
+        sightings_grouped = {lat_lng: list(sightings) for lat_lng, sightings
+                             in groupby(sightings, lambda sighting: (sighting.latitude, sighting.longitude))}
 
-        This view returns a list of all the sightings
-        for an animal.
+        # nested group for animal_id
+        for lat_lng in sightings_grouped:
+            lat_lng_sightings = sorted(sightings_grouped[lat_lng], key=lambda sighting: sighting.animal_id)
+            # groupby only groups contiguous elements
+            sightings_grouped[lat_lng] = {animal_id: list(sightings) for animal_id, sightings
+                                          in groupby(lat_lng_sightings, lambda sighting: sighting.animal_id)}
 
-        animal_id = self.kwargs['animal_id']
-        queryset = Sighting.objects.filter(animal_id=animal_id)
-        return queryset
-"""
+        # for each sighting of an animal in the same location get the latest sighting
+        filtered_sightings = []
+        for lat_lng in sightings_grouped:
+            lat_lng_sightings = sightings_grouped[lat_lng]
+            for animal_id in lat_lng_sightings:
+                animal_sightings = \
+                    sorted(lat_lng_sightings[animal_id], key=lambda sighting: sighting.dttm, reverse=True)
+                filtered_sightings.append(animal_sightings[0])
+
+        serializer = SightingSerializer(filtered_sightings, many=True)
+        return Response(serializer.data)
