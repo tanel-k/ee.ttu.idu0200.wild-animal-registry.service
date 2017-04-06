@@ -26,7 +26,8 @@ SECRET_KEY = 'g61zm^nex@y#it0es5f333+-_@8agj4fn3i-&pz9p)(6h&r)%x'
 DEBUG = True
 
 ALLOWED_HOSTS = [
-'wild-animal-registry.herokuapp.com',
+    'wild-animal-registry.herokuapp.com',
+    'localhost',
 ]
 
 

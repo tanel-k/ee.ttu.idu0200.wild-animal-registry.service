@@ -45,9 +45,14 @@ class AnimalReadOnlySerializer(serializers.ModelSerializer):
         model = Animal
         fields = ('id', 'name', 'species',)
 
-class SightingSerializer(serializers.ModelSerializer):
+class SightingViewSerializer(serializers.ModelSerializer):
     animal = AnimalReadOnlySerializer()
 
     class Meta:
         model = Sighting
         fields = ('id', 'dttm', 'latitude', 'longitude', 'animal',)
+
+class SightingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Sighting
+        fields = ('id', 'dttm', 'latitude', 'longitude',)

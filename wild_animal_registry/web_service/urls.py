@@ -10,5 +10,6 @@ urlpatterns = [
 
     url(r'^species', views.SpeciesList.as_view()),
 
-    url(r'^sightings', views.SightingsList.as_view()),
+    url(r'^sightings/(?P<pk>[0-9]+)$', views.SightingDetail.as_view()),
+    url(r'^sightings', views.LatestSightingsList.as_view()),
 ];

@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from .models import Animal, Sighting, Species
-from .serializers import AnimalSerializer, AnimalSightingSerializer, SpeciesSerializer, SightingSerializer
+from .serializers import AnimalSerializer, AnimalSightingSerializer, SpeciesSerializer, SightingViewSerializer, SightingSerializer
 
 
 class AnimalList(generics.ListCreateAPIView):
@@ -109,7 +109,7 @@ class SpeciesList(generics.ListAPIView):
         return queryset
 
 
-class SightingsList(views.APIView):
+class LatestSightingsList(views.APIView):
     def get(self, request):
         """
         This view returns the latest sightings of animals.
@@ -137,5 +137,10 @@ class SightingsList(views.APIView):
                     sorted(lat_lng_sightings[animal_id], key=lambda sighting: sighting.dttm, reverse=True)
                 filtered_sightings.append(animal_sightings[0])
 
-        serializer = SightingSerializer(filtered_sightings, many=True)
+        serializer = SightingViewSerializer(filtered_sightings, many=True)
         return Response(serializer.data)
+
+
+class SightingDetail(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = SightingSerializer
+    queryset = Sighting.objects.all()
