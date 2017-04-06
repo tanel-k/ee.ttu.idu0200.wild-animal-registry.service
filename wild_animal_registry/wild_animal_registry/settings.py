@@ -25,7 +25,9 @@ SECRET_KEY = 'g61zm^nex@y#it0es5f333+-_@8agj4fn3i-&pz9p)(6h&r)%x'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+'wild-animal-registry.herokuapp.com',
+]
 
 
 # Application definition
@@ -37,8 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # additional
     'django.contrib.postgres',
     'rest_framework',
+    # custom
     'web_service.apps.WebServiceConfig',
 ]
 
