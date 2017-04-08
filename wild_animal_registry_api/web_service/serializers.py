@@ -45,11 +45,6 @@ class AnimalSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Animal with this name already exists.")
         return value
 
-    def validate_species_id(self, value):
-        if value is None:
-            raise serializers.ValidationError("This field may not be blank.")
-        return value
-
 class AnimalReadOnlySerializer(serializers.ModelSerializer):
     species = serializers.StringRelatedField()
 
