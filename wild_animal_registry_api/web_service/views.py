@@ -95,14 +95,14 @@ class AnimalSightingDetail(AnimalSightingsView):
 
 class SpeciesList(generics.ListAPIView):
     serializer_class = SpeciesSerializer
-    queryset = Species.objects.all()
-    #def get_queryset(self):
-        #queryset = Species.objects.all()
-        #vernacular_name = self.request.query_params.get('vernacular_name', None)
-        #if vernacular_name is not None:
+
+    def get_queryset(self):
+        queryset = Species.objects.all()
+        vernacular_name = self.request.query_params.get('vernacular_name', None)
+        if vernacular_name is not None:
             # __search suffix triggers search index
-         #   queryset = queryset.filter(vernacular_name__search=vernacular_name)
-        #return queryset
+            queryset = queryset.filter(vernacular_name__search=vernacular_name)
+        return queryset
 
 
 class LatestSightingsList(views.APIView):
