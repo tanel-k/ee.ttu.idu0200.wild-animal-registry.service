@@ -38,6 +38,11 @@ class AnimalSerializer(serializers.ModelSerializer):
             return serializer.data
         return None
 
+    def validate_name(self, value):
+        if Animal.objects.all().filter(name__iexact=value).first() is not None:
+            raise serializers.ValidationError("Animal with this name already exists")
+        return value
+
 class AnimalReadOnlySerializer(serializers.ModelSerializer):
     species = serializers.StringRelatedField()
 
