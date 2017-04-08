@@ -39,6 +39,8 @@ class AnimalSerializer(serializers.ModelSerializer):
         return None
 
     def validate_name(self, value):
+        if self.instance and self.instance.name == value:
+            return value
         if Animal.objects.all().filter(name__iexact=value).first() is not None:
             raise serializers.ValidationError("Animal with this name already exists")
         return value
